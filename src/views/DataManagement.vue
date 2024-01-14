@@ -292,7 +292,15 @@
 						v-model="ladeparkAtThgConfigData.apiKey"
 						disabled
 					/>
-					<hr/>
+					<div class="row justify-content-center">
+						<openwb-base-click-button
+							class="col-5 btn-success"
+							@buttonClicked="testConnectionLadeparkAtThg()"
+						>
+							Verbindung testen
+						</openwb-base-click-button>
+					</div>
+					<hr />
 					<div class="row justify-content-center">
 						<openwb-base-click-button
 							class="col-5"
@@ -1012,6 +1020,12 @@ export default {
 				});
 				this.enableAddLadeparkAtThgButton = true;
 			}
+		},
+		testConnectionLadeparkAtThg() {
+			this.$emit("sendCommand", {
+				command: "testConnectionLadeparkAtThg",
+				data: this.ladeparkAtThgConfigData,
+			});
 		},
 	},
 };
