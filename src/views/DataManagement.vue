@@ -1,4 +1,15 @@
 <template>
+	<!-- modal dialogs -->
+	<openwb-base-modal-dialog
+		:show="showLadeparkAtThgRemoveModal"
+		title="Verbindungsdaten löschen"
+		subtype="danger"
+		:buttons="[{ text: 'Löschen', event: 'confirm', subtype: 'danger' }]"
+		@modal-result="removeLadeparkAtThg($event)"
+	>
+		Wollen Sie die vorhandenen Verbindungsdaten wirklich entfernen? Dieser
+		Vorgang kann nicht rückgängig gemacht werden!
+	</openwb-base-modal-dialog>
 	<div class="system">
 		<openwb-base-alert subtype="danger">
 			<h2>Achtung!</h2>
@@ -225,6 +236,80 @@
 				</form>
 			</openwb-base-card>
 			<openwb-base-card
+				title="THG-Abrechnung Österreich"
+				subtype="success"
+				:collapsible="true"
+				:collapsed="true"
+			>
+				<openwb-base-heading>
+					Information
+				</openwb-base-heading>
+				<openwb-base-alert subtype="info">
+					Information
+				</openwb-base-alert>
+				<form v-if="!ladeparkAtThgConfigData.serverUrl || !ladeparkAtThgConfigData.apiKey"
+					  name="ladeparkAtThgForm">
+					<openwb-base-text-input
+						title="Server-URL"
+						required
+						subtype="host"
+						v-model="addLadeparkAtThgData.serverUrl"
+					/>
+					<openwb-base-text-input
+						title="API-Key"
+						required
+						subtype="password"
+						v-model="addLadeparkAtThgData.apiKey"
+					/>
+					<hr/>
+					<div class="row justify-content-center">
+						<openwb-base-click-button
+							class="col-5"
+							:class="
+									enableAddLadeparkAtThgButton
+										? 'btn-success'
+										: 'btn-outline-success'
+								"
+							:disabled="!enableAddLadeparkAtThgButton"
+							@buttonClicked="addLadeparkAtThgDataCommand"
+						>
+							Verbindungsdaten speichern
+						</openwb-base-click-button>
+					</div>
+				</form>
+				<div v-if="ladeparkAtThgConfigData.serverUrl && ladeparkAtThgConfigData.apiKey">
+					<openwb-base-text-input
+						title="Server-URL"
+						required
+						subtype="host"
+						v-model="ladeparkAtThgConfigData.serverUrl"
+						disabled
+					/>
+					<openwb-base-text-input
+						title="API-Key"
+						required
+						subtype="password"
+						v-model="ladeparkAtThgConfigData.apiKey"
+						disabled
+					/>
+					<hr/>
+					<div class="row justify-content-center">
+						<openwb-base-click-button
+							class="col-5"
+							:class="
+									enableRemoveLadeparkAtThgButton
+										? 'btn-danger'
+										: 'btn-outline-danger'
+								"
+							:disabled="!enableRemoveLadeparkAtThgButton"
+							@buttonClicked="removeLadeparkAtThgModal($event)"
+						>
+							Verbindungsdaten löschen
+						</openwb-base-click-button>
+					</div>
+				</div>
+			</openwb-base-card>
+			<openwb-base-card
 				title="Datenübernahme"
 				subtype="success"
 				:collapsible="true"
@@ -433,7 +518,15 @@ export default {
 				"openWB/vehicle/+/name",
 				"openWB/LegacySmartHome/config/get/Devices/+/device_configured",
 				"openWB/LegacySmartHome/config/get/Devices/+/device_name",
+				"openWB/system/ladepark_at_thg/config",
 			],
+			enableAddLadeparkAtThgButton: true,
+			addLadeparkAtThgData: {
+				serverUrl: "",
+				apiKey: "",
+			},
+			enableRemoveLadeparkAtThgButton: true,
+			showLadeparkAtThgRemoveModal: false,
 			warningAcknowledged: false,
 			selectedRestoreFile: undefined,
 			restoreUploadDone: false,
@@ -703,6 +796,14 @@ export default {
 			}
 			return myOptions;
 		},
+		ladeparkAtThgConfigData: {
+			get() {
+				return {
+					serverUrl: this.$store.state.mqtt["openWB/system/ladepark_at_thg/config"].server_url,
+					apiKey: this.$store.state.mqtt["openWB/system/ladepark_at_thg/config"].api_key
+				}
+			},
+		},
 	},
 	methods: {
 		/**
@@ -888,6 +989,29 @@ export default {
 				name: "reloadRequired",
 				value: true,
 			});
+		},
+		addLadeparkAtThgDataCommand() {
+			if (document.forms.ladeparkAtThgForm.reportValidity()) {
+				this.$emit("sendCommand", {
+					command: "addLadeparkAtThgData",
+					data: this.addLadeparkAtThgData,
+				});
+				this.enableAddLadeparkAtThgButton = false;
+			}
+		},
+		removeLadeparkAtThgModal(event) {
+			// prevent further processing of the click event
+			event.stopPropagation();
+			this.showLadeparkAtThgRemoveModal = true;
+		},
+		removeLadeparkAtThg(event) {
+			this.showLadeparkAtThgRemoveModal = false;
+			if (event == "confirm") {
+				this.$emit("sendCommand", {
+					command: "removeLadeparkAtThgData",
+				});
+				this.enableAddLadeparkAtThgButton = true;
+			}
 		},
 	},
 };
