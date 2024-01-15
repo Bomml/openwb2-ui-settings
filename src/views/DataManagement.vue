@@ -318,7 +318,7 @@
 						>
 							<openwb-base-click-button
 								class="btn btn-block btn-success"
-								@buttonClicked="testConnectionLadeparkAtThg"
+								@buttonClicked="testConnectionLadeparkAtThg(this.ladeparkAtThgConfigData)"
 							>
 								Verbindung testen
 							</openwb-base-click-button>
@@ -1051,9 +1051,10 @@ export default {
 				data: data,
 			});
 		},
-		uploadManualDataToLadeparkAtThg() {
+		uploadManualDataToLadeparkAtThg(data) {
 			this.$emit("sendCommand", {
 				command: "uploadManualDataToLadeparkAtThg",
+				data: data,
 			});
 		},
 	},
