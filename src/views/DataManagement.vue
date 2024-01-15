@@ -262,19 +262,31 @@
 						v-model="addLadeparkAtThgData.apiKey"
 					/>
 					<hr/>
-					<div class="row justify-content-center">
-						<openwb-base-click-button
-							class="col-5"
-							:class="
+					<div class="row justify-content-center mb-1">
+						<div class="col-md-4 d-flex py-1 justify-content-center">
+							<openwb-base-click-button
+								class="btn btn-block"
+								:class="
 									enableAddLadeparkAtThgButton
 										? 'btn-success'
 										: 'btn-outline-success'
 								"
-							:disabled="!enableAddLadeparkAtThgButton"
-							@buttonClicked="addLadeparkAtThgDataCommand"
+								:disabled="!enableAddLadeparkAtThgButton"
+								@buttonClicked="addLadeparkAtThgDataCommand"
+							>
+								Verbindungsdaten speichern
+							</openwb-base-click-button>
+						</div>
+						<div
+							class="col-md-4 d-flex py-1 justify-content-center"
 						>
-							Verbindungsdaten speichern
-						</openwb-base-click-button>
+							<openwb-base-click-button
+								class="btn btn-block btn-success"
+								@buttonClicked="testConnectionLadeparkAtThg(this.addLadeparkAtThgData)"
+							>
+								Verbindung testen
+							</openwb-base-click-button>
+						</div>
 					</div>
 				</form>
 				<div v-if="ladeparkAtThgConfigData.serverUrl && ladeparkAtThgConfigData.apiKey">
@@ -292,15 +304,27 @@
 						v-model="ladeparkAtThgConfigData.apiKey"
 						disabled
 					/>
-					<div class="row justify-content-center">
-						<openwb-base-click-button
-							class="col-5 btn-success"
-							@buttonClicked="testConnectionLadeparkAtThg()"
+					<div class="row justify-content-center mb-1">
+						<div class="col-md-4 d-flex py-1 justify-content-center">
+							<openwb-base-click-button
+								class="btn btn-block btnd btn-success"
+								@buttonClicked="uploadManualDataToLadeparkAtThg"
+							>
+								Manuell hochladen
+							</openwb-base-click-button>
+						</div>
+						<div
+							class="col-md-4 d-flex py-1 justify-content-center"
 						>
-							Verbindung testen
-						</openwb-base-click-button>
+							<openwb-base-click-button
+								class="btn btn-block btn-success"
+								@buttonClicked="testConnectionLadeparkAtThg"
+							>
+								Verbindung testen
+							</openwb-base-click-button>
+						</div>
 					</div>
-					<hr />
+					<hr/>
 					<div class="row justify-content-center">
 						<openwb-base-click-button
 							class="col-5"
@@ -1021,10 +1045,15 @@ export default {
 				this.enableAddLadeparkAtThgButton = true;
 			}
 		},
-		testConnectionLadeparkAtThg() {
+		testConnectionLadeparkAtThg(data) {
 			this.$emit("sendCommand", {
 				command: "testConnectionLadeparkAtThg",
-				data: this.ladeparkAtThgConfigData,
+				data: data,
+			});
+		},
+		uploadManualDataToLadeparkAtThg() {
+			this.$emit("sendCommand", {
+				command: "uploadManualDataToLadeparkAtThg",
 			});
 		},
 	},
